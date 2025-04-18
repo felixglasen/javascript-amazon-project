@@ -1,30 +1,37 @@
+
 import {cart, removeFromCart} from '../data/cart.js';
 import {products} from '../data/products.js';
 import {formatCurrency} from './utils/money.js';
-
 
 let cartSummaryHTML = '';
 
 cart.forEach((cartItem) => {
   const productId = cartItem.productId;
 
-  let matchingProduct; 
+  let matchingProduct;
+
   products.forEach((product) => {
     if (product.id === productId) {
       matchingProduct = product;
     }
   });
 
-cartSummaryHTML +=
-  `
-     <div class="cart-item-container js-cart-item-container-${matchingProduct.id}">
+  if (!matchingProduct) {
+    console.error(`No matching product found for ID: ${productId}`);
+    return;
+ 
+  }
+
+  cartSummaryHTML += `
+    <div class="cart-item-container
+      js-cart-item-container-${matchingProduct.id}">
       <div class="delivery-date">
         Delivery date: Tuesday, June 21
       </div>
 
       <div class="cart-item-details-grid">
         <img class="product-image"
-          src="../${matchingProduct.image}">
+          src="${matchingProduct.image}">
 
         <div class="cart-item-details">
           <div class="product-name">
@@ -93,21 +100,20 @@ cartSummaryHTML +=
       </div>
     </div>
   `;
-
 });
 
-
-
 document.querySelector('.js-order-summary')
- .innerHTML = cartSummaryHTML;
+  .innerHTML = cartSummaryHTML;
 
- document.querySelectorAll('.js-delete-link')
+document.querySelectorAll('.js-delete-link')
   .forEach((link) => {
     link.addEventListener('click', () => {
       const productId = link.dataset.productId;
-      removeFromCart(productId); 
-      
-      const container = document.querySelector(`.js-cart-item-container-${productId}`);
+      removeFromCart(productId);
+
+      const container = document.querySelector(
+        `.js-cart-item-container-${productId}`
+      );
       container.remove();
-    })
-  })
+    });
+  });
